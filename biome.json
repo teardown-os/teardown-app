@@ -5,26 +5,43 @@
 		"clientKind": "git",
 		"useIgnoreFile": false
 	},
-	"files": {
-		"ignoreUnknown": false,
-		"ignore": []
-	},
-	"formatter": {
-		"enabled": true,
-		"indentStyle": "tab"
-	},
 	"organizeImports": {
 		"enabled": true
 	},
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true
+			"recommended": true,
+			"a11y": {
+				"useKeyWithClickEvents": "off"
+			},
+			"correctness": {
+				"noEmptyPattern": "off"
+			},
+			"complexity": {
+				"noBannedTypes": "off",
+				"noForEach": "off"
+			},
+			"suspicious": {
+				"noExplicitAny": "off",
+				"noArrayIndexKey": "off"
+			},
+			"style": {
+				"noUnusedTemplateLiteral": "off",
+				"useSelfClosingElements": "off"
+			}
 		}
 	},
-	"javascript": {
-		"formatter": {
-			"quoteStyle": "double"
-		}
+	"formatter": {
+		"enabled": true,
+		"ignore": ["**/package.json", "**/tauri.conf.json"],
+		"include": [
+			"**/*.ts",
+			"**/*.tsx",
+			"**/*.js",
+			"**/*.jsx",
+			"**/*.json",
+			"**/*.md"
+		]
 	}
 }
