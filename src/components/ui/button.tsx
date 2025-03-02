@@ -14,7 +14,7 @@ import { View } from "./view";
 import type { FunctionComponent } from "react";
 
 const buttonVariants = cva(
-  "flex-row items-center justify-center gap-2 rounded-md",
+  "flex flex-row items-center justify-center gap-2 rounded-xl",
   {
     variants: {
       variant: {
@@ -26,15 +26,15 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 active:underline",
       },
       size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
-        icon: "h-10 w-10",
+        sm: "h-10 px-3",
+        md: "h-16 px-6 ",
+        lg: "h-20 px-8",
+        icon: "h-12 w-12",
       },
     },
     defaultVariants: {
       variant: "default",
-      size: "default",
+      size: "md",
     },
   }
 );
@@ -50,15 +50,15 @@ const buttonTextVariants = cva("text-sm font-medium text-center", {
       link: "text-primary",
     },
     size: {
-      default: "text-sm",
-      sm: "text-xs",
-      lg: "text-base",
+      sm: "text-sm",
+      md: "text-md",
+      lg: "text-lg",
       icon: "text-sm",
     },
   },
   defaultVariants: {
     variant: "default",
-    size: "default",
+    size: "md",
   },
 });
 
@@ -112,7 +112,7 @@ export const ButtonText: FunctionComponent<ButtonTextProps> =
 
 ButtonText.displayName = "ButtonText";
 
-const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>(
+const Button = React.forwardRef<React.ComponentRef<typeof Pressable>, ButtonProps>(
   (
     {
       className,

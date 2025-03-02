@@ -6,7 +6,7 @@ import { Text as RNText, type TextProps as RNTextProps } from 'react-native';
 import { cn } from '@/lib/utils';
 import type { FunctionComponent } from 'react';
 
-cssInterop(UITextView, { className: 'style' });
+const TextView = cssInterop(UITextView, { className: 'style' });
 
 const textVariants = cva('text-foreground', {
   variants: {
@@ -41,7 +41,7 @@ const TextClassContext = React.createContext<string | undefined>(undefined);
 const Text: FunctionComponent<RNTextProps & VariantProps<typeof textVariants>> = ({ className, variant, color, ...props }) => {
     const textClassName = React.useContext(TextClassContext);
     return (
-      <RNText
+      <TextView
         className={cn(textVariants({ variant, color }), textClassName, className)}
         {...props}
       />
