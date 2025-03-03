@@ -1,20 +1,3 @@
-
-
 export class Teardown {
-
-
-
-
-
-
-  constructor() {
-    
-  }
-  
-
-
-
-
-  
+	constructor() {}
 }
-

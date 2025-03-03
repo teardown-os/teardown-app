@@ -1,14 +1,10 @@
-export * from './icon-with-classname';
+export * from "./icon-with-classname";
 
-import { iconWithClassName } from './icon-with-classname';
-import * as Icons from 'lucide-react-native';
+import * as Icons from "lucide-react-native";
+import { iconWithClassName } from "./icon-with-classname";
 
 export const Home = iconWithClassName(Icons.Home);
-
-
-
-
-
-
-
-
+export const ArrowRight = iconWithClassName(Icons.ArrowRight);
+export const ArrowLeft = iconWithClassName(Icons.ArrowLeft);
+export const LoaderCircle = iconWithClassName(Icons.LoaderCircle);
+export const Loader = iconWithClassName(Icons.Loader);

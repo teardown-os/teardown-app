@@ -1,63 +1,45 @@
 import * as React from "react";
-import { ActivityIndicator, View, type ViewProps } from "react-native";
 import { cva, type VariantProps } from "class-variance-authority";
-
+import { LoaderCircle } from "@/assets/icons";
 import { cn } from "@/lib/utils";
 
-const spinnerVariants = cva("items-center justify-center", {
-  variants: {
-    variant: {
-      default: "text-primary",
-      dark: "text-white",
-      splice: "text-primary",
-    },
-    size: {
-      default: "h-6 w-6",
-      sm: "h-4.5 w-4.5",
-      md: "h-6 w-6",
-      lg: "h-8 w-8",
-      xs: "h-4 w-4",
-    },
-  },
-  defaultVariants: {
-    variant: "default",
-    size: "default",
-  },
+const spinnerVariants = cva("animate-spin", {
+	variants: {
+		variant: {
+			default: "text-primary-foreground",
+			destructive: "text-destructive-foreground",
+			outline: "text-foreground",
+			secondary: "text-secondary-foreground",
+			ghost: "text-foreground",
+			link: "text-primary",
+		},
+		size: {
+			sm: "h-4 w-4",
+			md: "h-5 w-5",
+			lg: "h-6 w-6",
+			"icon-sm": "h-4 w-4",
+			icon: "h-5 w-5",
+			"icon-lg": "h-6 w-6",
+		},
+	},
+	defaultVariants: {
+		variant: "default",
+		size: "md",
+	},
 });
 
-export interface SpinnerProps
-  extends ViewProps,
-    VariantProps<typeof spinnerVariants> {}
+export interface SpinnerProps extends VariantProps<typeof spinnerVariants> {
+	className?: string;
+}
 
-export const Spinner = React.forwardRef<React.ElementRef<typeof View>, SpinnerProps>(
-  ({ className, variant, size, ...props }, ref) => {
-    const colorMap = {
-      default: "#0891b2", // cyan-600
-      dark: "#ffffff",
-      splice: "#0891b2", // cyan-600
-    };
+export const Spinner = React.memo(({ variant, size, className }: SpinnerProps) => {
+	return (
+		<LoaderCircle
+			className={cn(spinnerVariants({ variant, size }), className)}
+		/>
+	);
+});
 
-    const sizeMap: Record<string, "small" | "large"> = {
-      default: "small",
-      sm: "small",
-      md: "small",
-      lg: "large",
-      xs: "small",
-    };
+Spinner.displayName = "Spinner";
 
-    return (
-      <View
-        ref={ref}
-        className={cn(spinnerVariants({ variant, size, className }))}
-        {...props}
-      >
-        <ActivityIndicator 
-          color={colorMap[variant || "default"]} 
-          size={sizeMap[size as string || "default"]} 
-        />
-      </View>
-    );
-  }
-);
-
-Spinner.displayName = "Spinner"; 
+export { spinnerVariants };

@@ -7,5 +7,6 @@
     "class",
     "className",
     "headerClassName"
-  ]
+  ],
+  "editor.formatOnSave": true
 }
