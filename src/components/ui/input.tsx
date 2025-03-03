@@ -29,7 +29,7 @@ const inputVariants = cva(
   }
 );
 
-export interface InputProps extends TextInputProps, VariantProps<typeof inputVariants> {
+export interface InputProps extends Omit<TextInputProps, "onChange">, VariantProps<typeof inputVariants> {
   className?: string;
   onChange?: (text: string) => void;
 }
@@ -40,7 +40,7 @@ export const Input = forwardRef<TextInput, InputProps>(
     const [isFocused, setIsFocused] = useState(false);
 
     const onFocus = useCallback((e: NativeSyntheticEvent<TextInputFocusEventData>) => {
-      // setIsFocused(true);
+      setIsFocused(true);
       props.onFocus?.(e);
     }, [props.onFocus])
 

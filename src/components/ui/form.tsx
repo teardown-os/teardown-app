@@ -4,6 +4,7 @@ import {
   Controller,
   useFormContext,
   FormProvider,
+  useForm,
 } from "react-hook-form";
 import type {
   ControllerProps,
@@ -178,6 +179,7 @@ const FormMessage = React.forwardRef<Text, FormMessageProps>(
 FormMessage.displayName = "FormMessage";
 
 export {
+  useForm,
   useFormField,
   Form,
   FormItem,
