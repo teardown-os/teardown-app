@@ -32,13 +32,15 @@ export interface SpinnerProps extends VariantProps<typeof spinnerVariants> {
 	className?: string;
 }
 
-export const Spinner = React.memo(({ variant, size, className }: SpinnerProps) => {
-	return (
-		<LoaderCircle
-			className={cn(spinnerVariants({ variant, size }), className)}
-		/>
-	);
-});
+export const Spinner = React.memo(
+	({ variant, size, className }: SpinnerProps) => {
+		return (
+			<LoaderCircle
+				className={cn(spinnerVariants({ variant, size }), className)}
+			/>
+		);
+	},
+);
 
 Spinner.displayName = "Spinner";
 

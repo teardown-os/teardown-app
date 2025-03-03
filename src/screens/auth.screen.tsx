@@ -1,42 +1,47 @@
-import { View } from "@/components/ui/view";
-import { Text } from "@/components/ui/text";
-import React, { type FunctionComponent, useState } from "react";
-import { TeardownLogo } from "@/assets/logos/teardown.logo";
+import { teardown } from "@/_sdk";
+import { ArrowLeft, ArrowRight } from "@/assets/icons";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ScreenRoot, ScreenContent, ScreenFooter } from "@/components/ui/screen-container";
-import type { ControllerRenderProps } from "react-hook-form";
 import {
   Form,
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
   FormMessage,
+  useForm,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot
+} from "@/components/ui/input-otp";
+import {
+  ScreenContent,
+  ScreenFooter,
+  ScreenRoot,
+} from "@/components/ui/screen-container";
+import { Text } from "@/components/ui/text";
+import { useNavigation } from "@react-navigation/native";
+import React, { type FunctionComponent, useState } from "react";
+import type { ControllerRenderProps } from "react-hook-form";
 import { ScrollView } from "react-native";
-import { ArrowRight, ArrowLeft } from "@/assets/icons";
 import Animated, {
   FadeInDown,
-  FadeInRight,
-  FadeOutLeft,
-  FadeOutUp,
-  FadeOut
+  FadeOut,
+  FadeOutUp
 } from "react-native-reanimated";
-import { useNavigation } from "@react-navigation/native";
-import { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator } from "@/components/ui/input-otp";
-import { useForm } from "@/components/ui/form";
 
 export type AuthScreenProps = Record<string, never>;
 
-type AuthMode = { type: "email" } | { type: "password"; email: string };
+type AuthMode = { type: "email" } | { type: "passcode"; email: string };
 
 interface EmailFormValues {
   email: string;
 }
 
-interface PasswordFormValues {
-  password: string;
+interface PasscodeFormValues {
+  passcode: string;
 }
 
 const EmailForm: FunctionComponent<{
@@ -50,7 +55,18 @@ const EmailForm: FunctionComponent<{
   });
 
   const handleSubmit = form.handleSubmit(async (values: EmailFormValues) => {
-    onSubmit(values.email);
+    const email = values.email;
+
+    const { error } = await teardown.auth.api.sendOtpToEmail(email);
+
+    if (error) {
+      console.error("Error sending OTP to email:", error);
+      form.setError("email", { message: "Error sending OTP to email" });
+      return;
+    }
+
+    onSubmit(email);
+
   });
 
   return (
@@ -65,10 +81,14 @@ const EmailForm: FunctionComponent<{
             Enter your email address
           </Text>
           <Text className="text-muted-foreground mb-4">
-            To continue to your Teardown dashboard, please enter your email address below.
+            To continue to your Teardown dashboard, please enter your email
+            address below.
           </Text>
         </Animated.View>
-        <Animated.View entering={FadeInDown.duration(600).delay(200)} exiting={FadeOut.duration(300)}>
+        <Animated.View
+          entering={FadeInDown.duration(600).delay(200)}
+          exiting={FadeOut.duration(300)}
+        >
           <FormField
             control={form.control}
             name="email"
@@ -79,7 +99,9 @@ const EmailForm: FunctionComponent<{
                 message: "Please enter a valid email",
               },
             }}
-            render={({ field }: { field: ControllerRenderProps<EmailFormValues, "email"> }) => (
+            render={({
+              field,
+            }: { field: ControllerRenderProps<EmailFormValues, "email"> }) => (
               <FormItem>
                 <FormLabel>Your work e-mail</FormLabel>
                 <FormControl>
@@ -125,19 +147,28 @@ const EmailForm: FunctionComponent<{
   );
 };
 
-const PasswordForm: FunctionComponent<{
+const PasscodeForm: FunctionComponent<{
   email: string;
-  onSubmit: (password: string) => void;
+  onSubmit: (passcode: string) => void;
   onBack: () => void;
 }> = ({ email, onSubmit, onBack }) => {
-  const form = useForm<PasswordFormValues>({
+  const form = useForm<PasscodeFormValues>({
     defaultValues: {
-      password: "",
+      passcode: "",
     },
   });
 
-  const handleSubmit = form.handleSubmit(async (values: PasswordFormValues) => {
-    onSubmit(values.password);
+  const handleSubmit = form.handleSubmit(async (values: PasscodeFormValues) => {
+
+    const { error } = await teardown.auth.api.verifyOtp(email, values.passcode);
+
+    if (error) {
+      console.error("Error verifying OTP:", error);
+      form.setError("passcode", { message: "Error verifying OTP" });
+      return;
+    }
+
+    onSubmit(values.passcode);
   });
 
   return (
@@ -155,10 +186,13 @@ const PasswordForm: FunctionComponent<{
             Please enter the verification code sent to {email}
           </Text>
         </Animated.View>
-        <Animated.View entering={FadeInDown.duration(600).delay(200)} exiting={FadeOut.duration(300)}>
+        <Animated.View
+          entering={FadeInDown.duration(600).delay(200)}
+          exiting={FadeOut.duration(300)}
+        >
           <FormField
             control={form.control}
-            name="password"
+            name="passcode"
             rules={{
               required: "Code is required",
               minLength: {
@@ -173,7 +207,7 @@ const PasswordForm: FunctionComponent<{
                     maxLength={6}
                     value={field.value}
                     onChange={field.onChange}
-                    onComplete={handleSubmit}
+                    onComplete={() => handleSubmit()}
                   >
                     <InputOTPGroup>
                       <InputOTPSlot index={0} />
@@ -220,24 +254,19 @@ export const AuthScreen: FunctionComponent<AuthScreenProps> = () => {
   const navigation = useNavigation();
   const [authMode, setAuthMode] = useState<AuthMode>({ type: "email" });
 
-  const handleEmailSubmit = (email: string) => {
-    // Prevent keyboard dismissal during transition
-    requestAnimationFrame(() => {
-      setAuthMode({ type: "password", email });
-    });
+  const handleEmailSubmit = async (email: string) => {
+    setAuthMode({ type: "passcode", email });
   };
 
-  const handlePasswordSubmit = async (password: string) => {
-    // Implement login logic here
-    console.log("Login with:", { email: (authMode as { email: string }).email, password });
-    await new Promise(resolve => setTimeout(resolve, 2000));
+  const handlePasscodeSubmit = async (passcode: string) => {
+
   };
 
-  const handleBackFromEmail = () => {
+  const handleBackFromEmail = async () => {
     navigation.goBack();
   };
 
-  const handleBackFromPassword = () => {
+  const handleBackFromPasscode = () => {
     setAuthMode({ type: "email" });
   };
 
@@ -248,17 +277,14 @@ export const AuthScreen: FunctionComponent<AuthScreenProps> = () => {
       </ScreenContent>
 
       {authMode.type === "email" ? (
-        <EmailForm
-          onSubmit={handleEmailSubmit}
-          onBack={handleBackFromEmail}
-        />
+        <EmailForm onSubmit={handleEmailSubmit} onBack={handleBackFromEmail} />
       ) : (
-        <PasswordForm
+        <PasscodeForm
           email={authMode.email}
-          onSubmit={handlePasswordSubmit}
-          onBack={handleBackFromPassword}
+          onSubmit={handlePasscodeSubmit}
+          onBack={handleBackFromPasscode}
         />
       )}
     </ScreenRoot>
   );
-}; 
+};

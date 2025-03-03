@@ -2,7 +2,7 @@ import type { FunctionComponent } from "react";
 import { Path, Svg as RNSvg, type SvgProps } from "react-native-svg";
 import { cssInterop } from "nativewind";
 
-const Svg = cssInterop(RNSvg, { className: 'style' });
+const Svg = cssInterop(RNSvg, { className: "style" });
 
 export type TeardownLogoProps = SvgProps;
 
