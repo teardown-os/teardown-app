@@ -51,7 +51,6 @@ export const WelcomeScreen: FunctionComponent<WelcomeScreenProps> = () => {
 				</Animated.View>
 				<Animated.View entering={FadeInDown.duration(600).delay(200)}>
 					<Button
-						className=""
 						end={<ArrowRight size={22} />}
 						onPress={onGetStartedPress}
 					>

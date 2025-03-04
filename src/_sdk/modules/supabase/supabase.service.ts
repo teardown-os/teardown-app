@@ -2,8 +2,10 @@ import * as Supabase from "@supabase/supabase-js";
 import { SupabaseStorage } from "./supabase.storage";
 import type { Database } from "./generated.types";
 
+export type SupabaseClient = Supabase.SupabaseClient<Database>;
+
 export class SupabaseService {
-	private _client: Supabase.SupabaseClient<Database>;
+	private _client: SupabaseClient;
 
 	constructor(supabaseUrl: string, supabaseKey: string) {
 		this._client = new Supabase.SupabaseClient<Database>(
@@ -13,7 +15,7 @@ export class SupabaseService {
 				auth: {
 					storage: new SupabaseStorage(),
 					persistSession: true,
-					// flowType: "pkce",
+					flowType: "pkce",
 					storageKey: "teardown-supabase",
 				},
 				global: {

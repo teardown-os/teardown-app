@@ -1,17 +1,17 @@
-import * as React from "react";
-import { cva, type VariantProps } from "class-variance-authority";
-import { LoaderCircle } from "@/assets/icons";
 import { cn } from "@/lib/utils";
+import { cva, type VariantProps } from "class-variance-authority";
+import type * as React from "react";
+import LoaderKit from "react-native-loader-kit";
 
-const spinnerVariants = cva("animate-spin", {
+const spinnerVariants = cva("", {
 	variants: {
 		variant: {
-			default: "text-primary-foreground",
+			default: "text-primary-foreground ",
 			destructive: "text-destructive-foreground",
 			outline: "text-foreground",
-			secondary: "text-secondary-foreground",
+			secondary: "text-white",
 			ghost: "text-foreground",
-			link: "text-primary",
+			link: "text-primary ",
 		},
 		size: {
 			sm: "h-4 w-4",
@@ -32,15 +32,41 @@ export interface SpinnerProps extends VariantProps<typeof spinnerVariants> {
 	className?: string;
 }
 
-export const Spinner = React.memo(
-	({ variant, size, className }: SpinnerProps) => {
-		return (
-			<LoaderCircle
-				className={cn(spinnerVariants({ variant, size }), className)}
-			/>
-		);
-	},
-);
+const sizeMap = {
+	sm: 16, // h-4 = 16px
+	md: 20, // h-5 = 20px
+	lg: 24, // h-6 = 24px
+	"icon-sm": 16,
+	icon: 20,
+	"icon-lg": 24,
+};
+
+const colorMap = {
+	default: "#000000", // text-primary-foreground
+	destructive: "#000000", // text-destructive-foreground
+	outline: "#ffffff", // text-foreground
+	secondary: "#ffffff", // text-white
+	ghost: "#000000", // text-foreground
+	link: "#0000ff", // text-primary
+};
+
+export const Spinner: React.FunctionComponent<SpinnerProps> = ({
+	variant = "default",
+	size = "md",
+	className,
+}) => {
+	const dimensions = sizeMap[size as keyof typeof sizeMap] || 20;
+	const color = colorMap[variant as keyof typeof colorMap] || "#ffffff";
+
+	return (
+		<LoaderKit
+			className={cn(spinnerVariants({ variant, size }), className)}
+			name="BallPulse"
+			color={color}
+			style={{ width: dimensions, height: dimensions }}
+		/>
+	);
+};
 
 Spinner.displayName = "Spinner";
 

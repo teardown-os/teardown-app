@@ -8,8 +8,12 @@ import {
   useEffect,
   useState,
 } from "react";
-import { View } from "react-native";
+import { ScrollView, View } from "react-native";
 import type { TeardownUserSession } from "../auth.service";
+import { Loading } from "@/components/ui/loading";
+import { ScreenContent } from "@/components/ui/screen-container";
+import { ScreenRoot } from "@/components/ui/screen-container";
+import { TeardownLogo } from "@/assets/logos/teardown.logo";
 
 const AuthContext = createContext<TeardownUserSession | null>(null);
 
@@ -30,9 +34,11 @@ export const AuthContainer: FunctionComponent<AuthContainerProps> = (props) => {
 
   if (!state.initialized) {
     return (
-      <View className="flex-1 items-center justify-center">
-        <Spinner />
-      </View>
+      <ScreenRoot>
+        <View className="absolute top-0 left-0 bottom-0 right-0 justify-center items-center">
+          <TeardownLogo className="w-10 h-10" />
+        </View>
+      </ScreenRoot>
     );
   }
 
@@ -72,8 +78,8 @@ const useProvidedState = () => {
       handleSession(payload.session);
     });
 
-    // const session = teardown.auth.getSession();
-    // handleSession(session);
+    const session = teardown.auth.getSession();
+    handleSession(session);
 
     return () => {
       listener();
@@ -85,4 +91,3 @@ const useProvidedState = () => {
     session: session ?? null,
   };
 };
-

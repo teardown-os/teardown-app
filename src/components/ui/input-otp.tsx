@@ -6,6 +6,7 @@ import {
 	type TextInputKeyPressEventData,
 } from "react-native";
 import { cn } from "@/lib/utils";
+import Clipboard from "@react-native-clipboard/clipboard";
 import Animated, { FadeIn } from "react-native-reanimated";
 
 interface OTPContextValue {
@@ -157,21 +158,41 @@ export const InputOTPSlot = React.forwardRef<View, InputOTPSlotProps>(
 			}
 		}, [index]);
 
-		const handleChangeText = (text: string) => {
-			if (text.length <= 1) {
-				const newValue = value.split("");
-				newValue[index] = text;
-				setValue(newValue.join(""));
+		const handleChangeText = async (text: string) => {
+			// If text is longer than 1 character, it's likely a paste operation
+			if (text.length > 1) {
+				// Take only up to maxLength characters and get the character for this index
+				const pastedValue = text.slice(0, maxLength);
+				const currentChar = pastedValue[index] || "";
 
-				if (text.length === 1 && index < maxLength - 1) {
-					focusInput(index + 1);
-				}
+				// Set the full value in the context
+				setValue(pastedValue);
+
+				// Focus the last filled input or the last possible input
+				const lastIndex = Math.min(pastedValue.length - 1, maxLength - 1);
+				focusInput(lastIndex);
+
+				// Return early to prevent any visual flicker
+				return currentChar;
 			}
+
+			// Handle single character input
+			const singleChar = text[0] || "";
+			const newValue = value.split("");
+			newValue[index] = singleChar;
+			setValue(newValue.join(""));
+
+			if (text.length === 1 && index < maxLength - 1) {
+				focusInput(index + 1);
+			}
+
+			return singleChar;
 		};
 
 		const handleKeyPress = (
 			e: NativeSyntheticEvent<TextInputKeyPressEventData>,
 		) => {
+			console.log("e.nativeEvent.key", e.nativeEvent.key);
 			if (e.nativeEvent.key === "Backspace" && !value[index] && index > 0) {
 				focusInput(index - 1);
 			}
@@ -191,7 +212,7 @@ export const InputOTPSlot = React.forwardRef<View, InputOTPSlotProps>(
 					// "text-lg font-medium ",
 					className,
 				)}
-				maxLength={1}
+				// maxLength={1}
 				keyboardType="number-pad"
 				value={value[index] || ""}
 				onChangeText={handleChangeText}

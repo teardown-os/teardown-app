@@ -52,7 +52,6 @@ export class AuthService {
 	}
 
 	async handleAuthStateChange(event: AuthChangeEvent, session: Session | null) {
-		console.log("handleAuthStateChange", event, session);
 		this.setAuthState(event, session as TeardownUserSession | null);
 	}
 

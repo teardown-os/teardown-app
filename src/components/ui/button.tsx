@@ -38,10 +38,15 @@ const buttonVariants = cva(
 				icon: "h-14 w-14",
 				"icon-lg": "h-20 w-20",
 			},
+			layout: {
+				fill: "",
+				wrap: "",
+			},
 		},
 		defaultVariants: {
 			variant: "default",
 			size: "md",
+			layout: "fill",
 		},
 	},
 );
@@ -64,10 +69,15 @@ const buttonTextVariants = cva("text-sm font-medium text-center", {
 			icon: "text-md",
 			"icon-lg": "text-lg",
 		},
+		layout: {
+			fill: "",
+			wrap: "",
+		},
 	},
 	defaultVariants: {
 		variant: "default",
 		size: "md",
+		layout: "fill",
 	},
 });
 
@@ -89,16 +99,21 @@ const iconVariants = cva("", {
 			icon: "h-5 w-5",
 			"icon-lg": "h-6 w-6",
 		},
+		layout: {
+			fill: "",
+			wrap: "",
+		},
 	},
 	defaultVariants: {
 		variant: "default",
 		size: "md",
+		layout: "fill",
 	},
 });
 
 export interface ButtonProps
 	extends Omit<PressableProps, "children">,
-		VariantProps<typeof buttonVariants> {
+	VariantProps<typeof buttonVariants> {
 	isLoading?: boolean;
 	start?: React.ReactNode;
 	end?: React.ReactNode;
@@ -107,44 +122,88 @@ export interface ButtonProps
 
 export interface ButtonTextProps
 	extends TextProps,
-		VariantProps<typeof buttonTextVariants> {}
+	VariantProps<typeof buttonTextVariants> { }
 
 interface AdornmentProps {
 	children: React.ReactNode;
 	variant?: VariantProps<typeof buttonVariants>["variant"];
 	size?: VariantProps<typeof buttonVariants>["size"];
+	layout?: VariantProps<typeof buttonVariants>["layout"];
 }
 
+const startAdornmentVariants = cva("", {
+	variants: {
+		layout: {
+			fill: "absolute h-full pl-4 justify-center items-center content-center left-0",
+			wrap: "",
+		},
+	},
+	defaultVariants: {
+		layout: "fill",
+	},
+});
+
+const getIconSize = (
+	buttonSize: ButtonProps["size"],
+): number => {
+	switch (buttonSize) {
+		case "sm":
+		case "icon-sm":
+			return 16;
+		case "lg":
+		case "icon-lg":
+			return 24;
+		default:
+			return 20;
+	}
+};
+
 const StartAdornment = React.memo(
-	({ children, variant, size }: AdornmentProps) => {
+	({ children, variant, size, layout }: AdornmentProps) => {
 		const child = React.Children.only(children);
-		const iconClassName = iconVariants({ variant, size });
+		const iconClassName = iconVariants({ variant, size, layout });
+		const iconSize = getIconSize(size);
 
 		return (
-			<View className="absolute h-full pl-4 justify-center items-center content-center left-0">
+			<View className={startAdornmentVariants({ layout })}>
 				{React.isValidElement(child)
 					? React.cloneElement(child, {
-							// @ts-ignore
-							className: cn(iconClassName, child.props.className),
-						})
+						// @ts-ignore
+						className: cn(iconClassName, child.props.className),
+						size: iconSize,
+					})
 					: children}
 			</View>
 		);
 	},
 );
 
+const endAdornmentVariants = cva("", {
+	variants: {
+		layout: {
+			fill: "absolute h-full pr-4 justify-center items-center content-center right-0",
+			wrap: "",
+		},
+	},
+	defaultVariants: {
+		layout: "fill",
+	},
+});
+
 const EndAdornment = React.memo(
-	({ children, variant, size }: AdornmentProps) => {
+	({ children, variant, size, layout }: AdornmentProps) => {
 		const child = React.Children.only(children);
-		const iconClassName = iconVariants({ variant, size });
+		const iconClassName = iconVariants({ variant, size, layout });
+		const iconSize = getIconSize(size);
 
 		return (
-			<View className="absolute h-full pr-4 justify-center items-center content-center right-0">
+			<View className={endAdornmentVariants({ layout })}>
 				{React.isValidElement(child)
 					? React.cloneElement(child, {
-							// @ts-ignore
-							className: cn(iconClassName, child.props.className),
-						})
+						// @ts-ignore
+						className: cn(iconClassName, child.props.className),
+						size: iconSize,
+					})
 					: children}
 			</View>
 		);
@@ -198,6 +257,7 @@ const Button = React.forwardRef<
 		{
 			className,
 			variant,
+			layout,
 			size,
 			children,
 			isLoading = false,
@@ -212,9 +272,10 @@ const Button = React.forwardRef<
 		const isChildrenString = typeof children === "string";
 		const isSingleChild =
 			React.Children.count(children) === 1 && !isChildrenString;
+
 		const minWidthRef = React.useRef(0);
-		const textClassName = buttonTextVariants({ variant, size });
-		const iconClassName = iconVariants({ variant, size });
+		const textClassName = buttonTextVariants({ variant, size, layout });
+		const iconClassName = iconVariants({ variant, size, layout });
 
 		const onLayout = React.useCallback((event: LayoutChangeEvent) => {
 			minWidthRef.current = event.nativeEvent.layout.width;
@@ -246,7 +307,7 @@ const Button = React.forwardRef<
 			return (
 				<React.Fragment>
 					{start && (
-						<StartAdornment variant={variant} size={size}>
+						<StartAdornment variant={variant} size={size} layout={layout}>
 							{start}
 						</StartAdornment>
 					)}
@@ -256,7 +317,7 @@ const Button = React.forwardRef<
 						children
 					)}
 					{end && (
-						<EndAdornment variant={variant} size={size}>
+						<EndAdornment variant={variant} size={size} layout={layout}>
 							{end}
 						</EndAdornment>
 					)}
@@ -277,9 +338,9 @@ const Button = React.forwardRef<
 						typeof style === "function"
 							? style
 							: {
-									...(style as object),
-									minWidth: minWidthRef.current || undefined,
-								}
+								...(style as object),
+								minWidth: minWidthRef.current || undefined,
+							}
 					}
 					onLayout={onLayout}
 					{...props}
