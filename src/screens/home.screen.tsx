@@ -1,33 +1,69 @@
 import { teardown } from "@/_sdk";
-import { Home } from "@/assets/icons";
+import { ChevronDown, User } from "@/assets/icons";
+import { ProjectLogo } from "@/assets/logos/project-logo";
 import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/text";
 import { View } from "@/components/ui/view";
 import { useOrganisation } from "@/contexts/organisation.context";
 import { useProject } from "@/contexts/project.context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Pressable } from "react-native";
 
 import React, { type FunctionComponent } from "react";
 
 export type HomeScreenProps = Record<string, never>;
 
 export const HomeScreen: FunctionComponent<HomeScreenProps> = () => {
-
 	const { selectedProject, setSelectedProject } = useProject();
-	const { selectedOrganisation, setSelectedOrganisation } = useOrganisation();
+	const { selectedOrganisation } = useOrganisation();
+	const insets = useSafeAreaInsets();
 
 	const handleChangeProject = () => {
 		setSelectedProject(null);
 	};
 
-	const handleChangeOrganisation = () => {
-		setSelectedOrganisation(null);
-	};
-
-
 	return (
-		<View className="flex flex-1 items-center justify-center gap-8 bg-background">
-			<Button onPress={handleChangeProject}>Change project</Button>
-			<Button onPress={handleChangeOrganisation}>Change organisation</Button>
-			<Button onPress={() => teardown.auth.api.signOut()}>Sign Out</Button>
+		<View className="flex flex-1 bg-background">
+			{/* Header */}
+			<View
+				className="px-6 pb-4"
+				style={{ paddingTop: insets.top + 16 }}
+			>
+				<View className="flex-row items-center justify-between mb-1">
+					<Text variant="subhead" color="secondary">
+						{selectedOrganisation?.name}
+					</Text>
+					<Pressable
+						onPress={() => teardown.auth.api.signOut()}
+						className="p-2 -mr-2"
+					>
+						<User size={20} className="text-muted-foreground" />
+					</Pressable>
+				</View>
+				<Pressable
+					onPress={handleChangeProject}
+					className="flex-row items-center border-b border-border/50 pb-3"
+				>
+					{selectedProject?.project_type && (
+						<View className="bg-primary/10 p-2 rounded-lg mr-3">
+							<ProjectLogo
+								projectType={selectedProject.project_type}
+								className="w-6 h-6"
+							/>
+						</View>
+					)}
+					<Text variant="title1" className="font-semibold flex-1">
+						{selectedProject?.name}
+					</Text>
+					<ChevronDown size={20} className="text-muted-foreground" />
+				</Pressable>
+			</View>
+
+			{/* Content */}
+			<View className="flex flex-1 items-center justify-center gap-8">
+				{/* <Button onPress={handleChangeProject}>Change project</Button> */}
+				<Button onPress={() => teardown.auth.api.signOut()}>Sign Out</Button>
+			</View>
 		</View>
 	);
 };
