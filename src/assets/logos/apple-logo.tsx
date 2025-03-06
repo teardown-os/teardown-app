@@ -11,6 +11,7 @@ export const AppleLogo: FunctionComponent<AppleLogoProps> = (props) => {
 	return (
 		<Svg
 			viewBox="0 0 50 50"
+			color={"white"}
 			{...otherProps}
 		>
 			<Path

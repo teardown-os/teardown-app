@@ -30,7 +30,7 @@ export class OrganisationMemberQueries extends QueryKeyGenerator {
 	}
 
 	getOrganisationMembers(organisationId: string | null) {
-		return this.teardown.queryClient.fetchQuery(
+		return this.teardown.queries.client.fetchQuery(
 			this.organisationMembersQueryOptions(organisationId),
 		);
 	}

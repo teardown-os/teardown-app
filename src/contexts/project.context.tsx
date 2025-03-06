@@ -40,11 +40,16 @@ export const ProjectProvider = ({
     setSelectedProject(null);
   }, [organisationId]);
 
-  // useEffect(() => {
-  //   if (projects.length === 1 && !selectedProject && selectedOrganisation) {
-  //     setSelectedProject(projects[0]);
-  //   }
-  // }, [projects, selectedProject, selectedOrganisation]);
+  useEffect(() => {
+
+    if (__DEV__) {
+      return;
+    }
+
+    if (projects.length === 1 && !selectedProject && selectedOrganisation) {
+      setSelectedProject(projects[0]);
+    }
+  }, [projects, selectedProject, selectedOrganisation]);
 
   return (
     <ProjectContext.Provider

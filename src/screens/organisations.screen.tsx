@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { teardown } from "@/_sdk";
 import { LogOut } from "@/assets/icons";
+import { FunctionComponent } from "react";
 
 type OrganisationsScreenProps = {};
 
@@ -64,11 +65,12 @@ const OrganisationCard = ({
   return (
     <Animated.View
       entering={FadeIn.duration(400).delay(index * 100)}
+      exiting={FadeOut.duration(400)}
       className="mb-4"
     >
       <Pressable
         onPress={onSelect}
-        className="bg-gradient-to-br from-card to-card/90 rounded-xl p-4 border border-border/50 active:scale-98 active:opacity-80 transition-transform shadow-sm"
+        className="bg-gradient-to-br from-card to-card/90 rounded-xl p-4 border border-border/50 active:scale-98 active:opacity-80 transition-transform"
       >
         <Text className="text-lg font-semibold mb-1">{organisation.name}</Text>
         <Text className="text-muted-foreground text-sm">
@@ -80,41 +82,14 @@ const OrganisationCard = ({
 };
 
 export const OrganisationsScreen = (props: OrganisationsScreenProps) => {
-  const { organisations, setSelectedOrganisation, isLoading } = useOrganisation();
-  const navigation = useNavigation();
   const insets = useSafeAreaInsets();
-
-  const handleSelectOrganisation = (organisation: Organisation) => {
-    setSelectedOrganisation(organisation);
-  };
-
-  const handleCreateOrganisation = () => {
-    navigation.navigate("CreateOrganisation" as never);
-  };
 
   const handleLogout = async () => {
     await teardown.auth.api.signOut();
   };
 
   const renderContent = () => {
-    if (isLoading) {
-      return Array.from({ length: 3 }).map((_, index) => (
-        <OrganisationCardSkeleton key={index} index={index} />
-      ));
-    }
 
-    if (!organisations?.length) {
-      return <EmptyOrganisationCard onPress={handleCreateOrganisation} />;
-    }
-
-    return organisations.map((org, index) => (
-      <OrganisationCard
-        key={org.id}
-        organisation={org}
-        onSelect={() => handleSelectOrganisation(org)}
-        index={index}
-      />
-    ));
   };
 
   return (
@@ -122,7 +97,10 @@ export const OrganisationsScreen = (props: OrganisationsScreenProps) => {
       <ScreenContent>
         <ScrollView className="flex-1" stickyHeaderIndices={[1]}>
           <View className="h-[25vh]" />
-          <Animated.View entering={FadeInDown.duration(400)} className="mb-6 bg-background p-4">
+          <Animated.View
+            entering={FadeInDown.duration(400)}
+            exiting={FadeOut.duration(400)}
+            className="mb-6 bg-background p-4">
             <Text className="text-2xl font-bold text-primary mb-2">
               Select an organization
             </Text>
@@ -131,18 +109,18 @@ export const OrganisationsScreen = (props: OrganisationsScreenProps) => {
             </Text>
           </Animated.View>
 
-          <View className="px-4">
-            {renderContent()}
+          <View className="px-4 pb-48">
+            <Content />
           </View>
         </ScrollView>
 
         <Animated.View
           entering={FadeIn.duration(400)}
           exiting={FadeOut.duration(400)}
-          className="absolute left-0 right-0 px-4 items-center justify-center"
+          // className="absolute left-0 right-0 px-4 items-center justify-center"
           style={{ bottom: insets.bottom + 16 }}
         >
-          <View>
+          <View className="items-center justify-center ">
             <Button
               variant="outline"
               size="sm"
@@ -157,4 +135,38 @@ export const OrganisationsScreen = (props: OrganisationsScreenProps) => {
       </ScreenContent>
     </ScreenRoot>
   );
+};
+
+
+const Content: FunctionComponent = () => {
+
+  const { organisations, setSelectedOrganisation, isLoading } = useOrganisation();
+
+  const handleSelectOrganisation = (organisation: Organisation) => {
+    setSelectedOrganisation(organisation);
+  };
+
+  const handleCreateOrganisation = () => {
+
+  };
+
+  if (isLoading || organisations == null) {
+    return Array.from({ length: 3 }).map((_, index) => (
+      <OrganisationCardSkeleton key={index} index={index} />
+    ));
+  }
+
+  if (!organisations.length) {
+    console.log("No organisations");
+    return <EmptyOrganisationCard onPress={handleCreateOrganisation} />;
+  }
+
+  return organisations.map((org, index) => (
+    <OrganisationCard
+      key={org.id}
+      organisation={org}
+      onSelect={() => handleSelectOrganisation(org)}
+      index={index}
+    />
+  ));
 };

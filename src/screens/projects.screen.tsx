@@ -66,11 +66,12 @@ const ProjectCard = ({
   return (
     <Animated.View
       entering={FadeIn.duration(400).delay(index * 100)}
+      exiting={FadeOut.duration(400)}
       className="mb-4"
     >
       <Pressable
         onPress={onSelect}
-        className="bg-gradient-to-br from-card to-card/90 rounded-xl p-4 border border-border/50 active:scale-98 active:opacity-80 transition-transform shadow-sm"
+        className="bg-gradient-to-br from-card to-card/90 rounded-xl p-4 border border-border/50 active:scale-98 active:opacity-80 transition-transform "
       >
         <View className="flex-row items-center justify-between gap-3">
           <View className="bg-primary/10 p-2.5 rounded-lg w-10 h-10">
@@ -111,6 +112,12 @@ export const ProjectsScreen = (props: ProjectsScreenProps) => {
   };
 
   const renderContent = () => {
+
+    if (selectedOrganisation == null) {
+      return null;
+    }
+
+
     if (isLoading) {
       return Array.from({ length: 3 }).map((_, index) => (
         <ProjectCardSkeleton key={index} index={index} />
@@ -136,7 +143,10 @@ export const ProjectsScreen = (props: ProjectsScreenProps) => {
       <ScreenContent>
         <ScrollView className="flex-1" stickyHeaderIndices={[1]}>
           <View className="h-[25vh]" />
-          <Animated.View entering={FadeInDown.duration(400)} className="mb-6 bg-background p-4">
+          <Animated.View
+            entering={FadeInDown.duration(400)}
+            exiting={FadeOut.duration(100)}
+            className="mb-6 bg-background p-4">
             <Text className="text-2xl font-bold text-primary mb-2">
               Select a project
             </Text>
@@ -145,7 +155,7 @@ export const ProjectsScreen = (props: ProjectsScreenProps) => {
             </Text>
           </Animated.View>
 
-          <View className="px-4">
+          <View className="px-4 pb-48">
             {renderContent()}
 
             {/* {Array.from({ length: 15 }).map((_, index) => (

@@ -2,7 +2,7 @@ import { teardown } from "@/_sdk";
 import { useAuth } from "@/_sdk/modules/auth";
 import type { Organisation } from "@/_sdk/modules/organisations/organisation";
 import type React from "react";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 interface OrganisationContextType {
   selectedOrganisation: Organisation | null;
@@ -40,12 +40,18 @@ export const OrganisationProvider = ({
     console.error("Organisations error", error);
   }
 
-  // useEffect(() => {
-  //   // Auto-select first organization if there's only one
-  //   if (organisations.length === 1 && !selectedOrganisation) {
-  //     setSelectedOrganisation(organisations[0]);
-  //   }
-  // }, [organisations, selectedOrganisation]);
+  useEffect(() => {
+
+
+    if (__DEV__) {
+      return;
+    }
+
+    // Auto-select first organization if there's only one
+    if (organisations.length === 1 && !selectedOrganisation) {
+      setSelectedOrganisation(organisations[0]);
+    }
+  }, [organisations, selectedOrganisation]);
 
   return (
     <OrganisationContext.Provider

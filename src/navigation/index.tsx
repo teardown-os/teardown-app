@@ -1,5 +1,8 @@
 import {
   createStaticNavigation,
+  NavigationProp,
+  ParamListBase,
+  RouteProp,
   type StaticParamList,
 } from "@react-navigation/native";
 // import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -19,10 +22,11 @@ import type * as React from "react";
 import { AuthScreen } from "../screens/auth.screen";
 import { HomeScreen } from "../screens/home.screen";
 import { WelcomeScreen } from "../screens/welcome.screen";
+import { View } from "@/components/ui/view";
+import { colors } from "@/theme/colors";
 
 const use_UserIsSignedIn = () => {
   const session = useAuth();
-  console.log("session", session);
   return session != null;
 };
 
@@ -37,7 +41,6 @@ const useHasOrganisation = () => {
 
 const useHasProject = () => {
   const { selectedProject } = useProject();
-  console.log("selectedProject", selectedProject);
   return selectedProject != null;
 };
 
@@ -71,8 +74,25 @@ const MainStack = createStackNavigator({
   },
   screenOptions: {
     headerShown: false,
+    headerBackTitle: "Back",
+    cardStyle: {
+      backgroundColor: colors.dark.background,
+    },
   },
 });
+
+const Layout = <ParamList extends ParamListBase, Navigation>(props: {
+  route: RouteProp<ParamList, keyof ParamList>;
+  navigation: Navigation;
+  theme: ReactNavigation.Theme;
+  children: React.ReactElement;
+}) => {
+  return (
+    <View className="flex-1 bg-background">
+      {props.children}
+    </View>
+  );
+};
 
 const RootStack = createStackNavigator({
   screens: {},
@@ -103,9 +123,13 @@ const RootStack = createStackNavigator({
       },
     },
   },
+  screenLayout: Layout,
   screenOptions: {
     headerShown: false,
-    cardStyleInterpolator: CardStyleInterpolators.forFadeFromBottomAndroid,
+    cardStyle: {
+      backgroundColor: colors.dark.background,
+    },
+    cardStyleInterpolator: CardStyleInterpolators.forNoAnimation,
   },
 });
 

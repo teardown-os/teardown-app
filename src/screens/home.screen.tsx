@@ -10,6 +10,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Pressable } from "react-native";
 
 import React, { type FunctionComponent } from "react";
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 
 export type HomeScreenProps = Record<string, never>;
 
@@ -23,7 +24,7 @@ export const HomeScreen: FunctionComponent<HomeScreenProps> = () => {
 	};
 
 	return (
-		<View className="flex flex-1 bg-background">
+		<Animated.View className="flex flex-1 bg-background" entering={FadeIn.duration(400)} exiting={FadeOut.duration(400)}>
 			{/* Header */}
 			<View
 				className="px-6 pb-4"
@@ -58,12 +59,6 @@ export const HomeScreen: FunctionComponent<HomeScreenProps> = () => {
 					<ChevronDown size={20} className="text-muted-foreground" />
 				</Pressable>
 			</View>
-
-			{/* Content */}
-			<View className="flex flex-1 items-center justify-center gap-8">
-				{/* <Button onPress={handleChangeProject}>Change project</Button> */}
-				<Button onPress={() => teardown.auth.api.signOut()}>Sign Out</Button>
-			</View>
-		</View>
+		</Animated.View>
 	);
 };

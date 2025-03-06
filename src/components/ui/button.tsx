@@ -15,7 +15,7 @@ import { Spinner } from "./spinner";
 import type { FunctionComponent } from "react";
 
 const buttonVariants = cva(
-	"flex flex-row items-center justify-center gap-2 rounded-xl",
+	"flex flex-row gap-2 rounded-xl relative",
 	{
 		variants: {
 			variant: {
@@ -32,15 +32,15 @@ const buttonVariants = cva(
 			},
 			size: {
 				sm: "h-10 px-3",
-				md: "h-14 px-6 ",
+				md: "h-14 px-6",
 				lg: "h-20 px-8",
 				"icon-sm": "h-10 w-10",
 				icon: "h-14 w-14",
 				"icon-lg": "h-20 w-20",
 			},
 			layout: {
-				fill: "",
-				wrap: "",
+				fill: "flex items-center justify-center ",
+				wrap: "w-auto",
 			},
 		},
 		defaultVariants: {
@@ -51,7 +51,7 @@ const buttonVariants = cva(
 	},
 );
 
-const buttonTextVariants = cva("text-sm font-medium text-center", {
+const buttonTextVariants = cva("text-sm font-medium text-center overflow-visible", {
 	variants: {
 		variant: {
 			default: "text-primary-foreground",
@@ -71,7 +71,7 @@ const buttonTextVariants = cva("text-sm font-medium text-center", {
 		},
 		layout: {
 			fill: "",
-			wrap: "",
+			wrap: "w-auto",
 		},
 	},
 	defaultVariants: {
@@ -131,11 +131,11 @@ interface AdornmentProps {
 	layout?: VariantProps<typeof buttonVariants>["layout"];
 }
 
-const startAdornmentVariants = cva("", {
+const startAdornmentVariants = cva("flex items-center justify-center", {
 	variants: {
 		layout: {
-			fill: "absolute h-full pl-4 justify-center items-center content-center left-0",
-			wrap: "",
+			fill: "absolute h-full pl-4 left-0",
+			wrap: "relative",
 		},
 	},
 	defaultVariants: {
@@ -178,10 +178,10 @@ const StartAdornment = React.memo(
 	},
 );
 
-const endAdornmentVariants = cva("", {
+const endAdornmentVariants = cva("flex items-center justify-center", {
 	variants: {
 		layout: {
-			fill: "absolute h-full pr-4 justify-center items-center content-center right-0",
+			fill: "absolute h-full pr-4 right-0",
 			wrap: "",
 		},
 	},
@@ -224,7 +224,7 @@ export const ButtonText: FunctionComponent<ButtonTextProps> = ({
 	return (
 		<Text
 			className={cn(
-				contextClassName || buttonTextVariants({ variant, size }),
+				// contextClassName || buttonTextVariants({ variant, size }),
 				className,
 			)}
 			style={style}
@@ -298,7 +298,7 @@ const Button = React.forwardRef<
 				if (React.isValidElement(child)) {
 					return React.cloneElement(child, {
 						// @ts-ignore
-						className: cn(iconClassName, child.props?.className),
+						// className: cn(iconClassName, child.props?.className),
 					});
 				}
 				return child;
@@ -339,7 +339,7 @@ const Button = React.forwardRef<
 							? style
 							: {
 								...(style as object),
-								minWidth: minWidthRef.current || undefined,
+								// minWidth: minWidthRef.current || undefined,
 							}
 					}
 					onLayout={onLayout}

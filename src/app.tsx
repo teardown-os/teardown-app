@@ -21,7 +21,7 @@ colorScheme.set("dark");
 export const App: FunctionComponent = () => {
   // Wrap the Navigation component with all providers
   return (
-    <QueryClientProvider client={teardown.queryClient}>
+    <QueryClientProvider client={teardown.queries.client}>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <SafeAreaProvider>
           <KeyboardProvider>
